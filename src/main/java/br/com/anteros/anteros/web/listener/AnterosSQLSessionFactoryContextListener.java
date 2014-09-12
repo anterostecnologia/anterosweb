@@ -1,11 +1,8 @@
 package br.com.anteros.anteros.web.listener;
 
-import java.io.File;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import br.com.anteros.core.configuration.exception.AnterosConfigurationException;
 import br.com.anteros.persistence.session.SQLSessionFactory;
 import br.com.anteros.persistence.session.configuration.AnterosPersistenceConfiguration;
 

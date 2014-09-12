@@ -20,10 +20,10 @@ import br.com.anteros.persistence.session.SQLSessionFactory;
 import br.com.anteros.persistence.session.context.ManagedSQLSessionContext;
 
 /**
- * Filter that manages a Hibernate Session for a conversation.
+ * Filter that manages a Anteros SQLSession for a conversation.
  * <p>
  * This filter should be used if your
- * <tt>hibernate.current_session_context_class</tt> configuration is set to
+ * <tt>current_session_context_class</tt> configuration is set to
  * <tt>managed</tt> and you are not using JTA or CMT.
  * <p>
  * With JTA you'd replace transaction demarcation with calls to the
@@ -53,7 +53,7 @@ public class AnterosSQLSessionConversationFilter
 
 	private SQLSessionFactory sf;
 
-	public static final String HIBERNATE_SESSION_KEY = "hibernateSession";
+	public static final String ANTEROS_SESSION_KEY = "anterosSQLSession";
 	public static final String END_OF_CONVERSATION_FLAG = "endOfConversation";
 
 	public void doFilter(ServletRequest request,
@@ -63,11 +63,11 @@ public class AnterosSQLSessionConversationFilter
 
 		SQLSession currentSession;
 
-		// Try to get a Hibernate Session from the HttpSession
+		// Try to get a Anteros SQLSession from the HttpSession
 		HttpSession httpSession =
 				((HttpServletRequest) request).getSession();
 		SQLSession disconnectedSession =
-				(SQLSession) httpSession.getAttribute(HIBERNATE_SESSION_KEY);
+				(SQLSession) httpSession.getAttribute(ANTEROS_SESSION_KEY);
 
 		try {
 
@@ -107,7 +107,7 @@ public class AnterosSQLSessionConversationFilter
 				currentSession.close();
 
 				log.debug("Cleaning Session from HttpSession");
-				httpSession.setAttribute(HIBERNATE_SESSION_KEY, null);
+				httpSession.setAttribute(ANTEROS_SESSION_KEY, null);
 
 				log.debug("<<< End of conversation");
 
@@ -117,7 +117,7 @@ public class AnterosSQLSessionConversationFilter
 				currentSession.getTransaction().commit();
 
 				log.debug("Storing Session in the HttpSession");
-				httpSession.setAttribute(HIBERNATE_SESSION_KEY, currentSession);
+				httpSession.setAttribute(ANTEROS_SESSION_KEY, currentSession);
 
 				log.debug("> Returning to user in conversation");
 			}
@@ -158,7 +158,7 @@ public class AnterosSQLSessionConversationFilter
 				}
 
 				log.debug("Removing Session from HttpSession");
-				httpSession.setAttribute(HIBERNATE_SESSION_KEY, null);
+				httpSession.setAttribute(ANTEROS_SESSION_KEY, null);
 
 			}
 
@@ -170,7 +170,6 @@ public class AnterosSQLSessionConversationFilter
 
 	public void init(FilterConfig filterConfig) throws ServletException {
 		log.debug("Initializing filter...");
-		log.debug("Obtaining SessionFactory from HibernateUtil");
 		sf = (SQLSessionFactory) filterConfig.getServletContext().getAttribute(AnterosSQLSessionFactoryContextListener.ANTEROS_SESSIONFACTORY_KEY);
 	}
 
