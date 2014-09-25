@@ -4,7 +4,7 @@
 
   <groupId>br.com.anteros</groupId>
   <artifactId>Anteros-Web</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.4-SNAPSHOT</version>
   <packaging>jar</packaging>
 
 	<properties>
@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>br.com.anteros</groupId>
 			<artifactId>Anteros-Persistence</artifactId>
-			<version>0.0.5-SNAPSHOT</version>
+			<version>LATEST</version>
 		</dependency>
 	</dependencies>
 
