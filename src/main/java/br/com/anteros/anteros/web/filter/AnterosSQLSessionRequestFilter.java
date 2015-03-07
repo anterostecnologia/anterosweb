@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2012 Anteros Tecnologia
+ *  
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package br.com.anteros.anteros.web.filter;
 
 import java.io.IOException;
@@ -15,27 +30,10 @@ import br.com.anteros.core.log.LoggerProvider;
 import br.com.anteros.persistence.session.SQLSessionFactory;
 
 /**
- * Filter that manages a Anteros SQLSession for a request.
- * <p>
- * This filter should be used if your
- * <tt>current_session_context_class</tt> configuration is set to
- * <tt>thread</tt> and you are not using JTA or CMT.
- * <p>
- * With JTA you'd replace transaction demarcation with calls to the
- * <tt>UserTransaction</tt> API. With CMT you would remove transaction
- * demarcation code from this filter.
- * <p>
- * An alternative, more flexible solution is
- * <tt>SessionTransactionInterceptor</tt> that can be applied to any pointcut
- * with JBoss AOP.
- * <p>
- * Note that you should not use this interceptor out-of-the-box with enabled
- * optimistic concurrency control. Apply your own compensation logic for failed
- * conversations, this is totally dependent on your applications design.
- *
- * @see auction.persistence.SessionTransactionInterceptor
- *
- * @author Christian Bauer
+ * Filtro que gerencia uma SQLSession do Anteros durante uma requisição.
+ * 
+ * @author Christian Bauer 
+ * @author modified by Edson Martins edsonmartins2005@gmail.com
  */
 public class AnterosSQLSessionRequestFilter implements Filter {
 
@@ -49,23 +47,23 @@ public class AnterosSQLSessionRequestFilter implements Filter {
 			throws IOException, ServletException {
 
 		try {
-			log.debug("Starting a database transaction");
+			log.debug("Iniciando a transação no banco de dados.");
 			sf.getCurrentSession().getTransaction().begin();
 
 			chain.doFilter(request, response);
 
-			log.debug("Committing the database transaction");
+			log.debug("Executando commit no banco de dados.");
 			sf.getCurrentSession().getTransaction().commit();
 
 		} catch (Throwable ex) {
 			ex.printStackTrace();
 			try {
 				if (sf.getCurrentSession().getTransaction().isActive()) {
-					log.debug("Trying to rollback database transaction after exception");
+					log.debug("Tentando reverter transação após exceção.");
 					sf.getCurrentSession().getTransaction().rollback();
 				}
 			} catch (Throwable rbEx) {
-				log.error("Could not rollback transaction after exception!", rbEx);
+				log.error("Não foi possível reverter a transação após a exceção!", rbEx);
 			}
 
 			throw new ServletException(ex);
@@ -73,7 +71,7 @@ public class AnterosSQLSessionRequestFilter implements Filter {
 	}
 
 	public void init(FilterConfig filterConfig) throws ServletException {
-		log.debug("Initializing filter...");
+		log.debug("Inicializando filtro...");
 		sf = (SQLSessionFactory) filterConfig.getServletContext().getAttribute(AnterosSQLSessionFactoryContextListener.ANTEROS_SESSIONFACTORY_KEY);
 	}
 

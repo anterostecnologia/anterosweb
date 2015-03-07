@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2012 Anteros Tecnologia
+ *  
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package br.com.anteros.anteros.web.filter;
 
 import java.io.IOException;
@@ -14,36 +29,15 @@ import javax.servlet.http.HttpSession;
 import br.com.anteros.anteros.web.listener.AnterosSQLSessionFactoryContextListener;
 import br.com.anteros.core.log.Logger;
 import br.com.anteros.core.log.LoggerProvider;
-import br.com.anteros.persistence.metadata.annotation.type.FlushMode;
 import br.com.anteros.persistence.session.SQLSession;
 import br.com.anteros.persistence.session.SQLSessionFactory;
 import br.com.anteros.persistence.session.context.ManagedSQLSessionContext;
 
 /**
- * Filter that manages a Anteros SQLSession for a conversation.
- * <p>
- * This filter should be used if your
- * <tt>current_session_context_class</tt> configuration is set to
- * <tt>managed</tt> and you are not using JTA or CMT.
- * <p>
- * With JTA you'd replace transaction demarcation with calls to the
- * <tt>UserTransaction</tt> API. With CMT you would remove transaction
- * demarcation code from this filter.
- * <p>
- * Use this filter for the <b>session-per-conversation</b> pattern with an
- * extended <tt>Session</tt>. Don't forget to set conversation boundaries in
- * your code! One way to do this is to put a marker attribute in the request,
- * and let the filter handle flushing and closing of the Session at the end of a
- * conversation.
- * <p>
- * We recommend the JBoss Seam framework with built-in support for conversations
- * in all environments.
- * <p>
- * Note that you should not use this interceptor out-of-the-box with enabled
- * optimistic concurrency control. Apply your own compensation logic for failed
- * conversations, this is totally dependent on your applications design.
- *
- * @author Christian Bauer
+ * Filtro que gerencia uma SQLSession do Anteros durante uma conversação.
+ * 
+ * @author Christian Bauer 
+ * @author modified by Edson Martins edsonmartins2005@gmail.com
  */
 public class AnterosSQLSessionConversationFilter
 		implements Filter {
@@ -63,7 +57,9 @@ public class AnterosSQLSessionConversationFilter
 
 		SQLSession currentSession;
 
-		// Try to get a Anteros SQLSession from the HttpSession
+		/*
+		 * Tentando obter a sessão do HttpSession
+		 */
 		HttpSession httpSession =
 				((HttpServletRequest) request).getSession();
 		SQLSession disconnectedSession =
@@ -71,86 +67,69 @@ public class AnterosSQLSessionConversationFilter
 
 		try {
 
-			// Start a new conversation or in the middle?
 			if (disconnectedSession == null) {
-				log.debug(">>> New conversation");
-				log.debug("Opening Session, disabling automatic flushing");
+				log.debug(">>> Nova conversação");
+				log.debug("Abrindo sessão, desabilitando flush automático.");
 				currentSession = sf.openSession();
 			} else {
-				log.debug("< Continuing conversation");
+				log.debug("< Continuando conversação.");
 				currentSession = disconnectedSession;
 			}
 
-			log.debug("Binding the current Session");
+			log.debug("Vinculando Sessão corrente.");
 			ManagedSQLSessionContext.bind(currentSession);
 
-			log.debug("Starting a database transaction");
+			log.debug("Iniciando a transação no banco de dados.");
 			currentSession.getTransaction().begin();
 
-			log.debug("Processing the event");
+			log.debug("Processando o filtro");
 			chain.doFilter(request, response);
 
-			log.debug("Unbinding Session after processing");
+			log.debug("Desvinculando a Sessão após o processamento.");
 			currentSession = ManagedSQLSessionContext.unbind(sf);
 
-			// End or continue the long-running conversation?
 			if (request.getAttribute(END_OF_CONVERSATION_FLAG) != null ||
 					request.getParameter(END_OF_CONVERSATION_FLAG) != null) {
 
-				log.debug("Flushing Session");
+				log.debug("Executando flush na Sessão");
 				currentSession.flush();
 
-				log.debug("Committing the database transaction");
+				log.debug("Executando commit no banco de dados.");
 				currentSession.getTransaction().commit();
 
-				log.debug("Closing the Session");
+				log.debug("Fechando a Sessão.");
 				currentSession.close();
 
-				log.debug("Cleaning Session from HttpSession");
+				log.debug("Limpando atributo Sessão da HttpSession");
 				httpSession.setAttribute(ANTEROS_SESSION_KEY, null);
 
-				log.debug("<<< End of conversation");
+				log.debug("<<< Fim da conversação");
 
 			} else {
 
-				log.debug("Committing database transaction");
+				log.debug("Executando commit no banco de dados.");
 				currentSession.getTransaction().commit();
 
-				log.debug("Storing Session in the HttpSession");
+				log.debug("Armazenando Sessão na HttpSession");
 				httpSession.setAttribute(ANTEROS_SESSION_KEY, currentSession);
 
-				log.debug("> Returning to user in conversation");
+				log.debug("> Retornando ao usuário");
 			}
 
-//		} catch (StaleObjectStateException staleEx) {
-//			log.error("This interceptor does not implement optimistic concurrency control!");
-//			log.error("Your application will not work until you add compensation actions!");
-//			// Rollback, close everything, possibly compensate for any permanent
-//			// changes
-//			// during the conversation, and finally restart business
-//			// conversation. Maybe
-//			// give the user of the application a chance to merge some of his
-//			// work with
-//			// fresh data... what you do here depends on your applications
-//			// design.
-//			throw staleEx;
 		} catch (Throwable ex) {
-			// Rollback only
 			try {
 				if (sf.getCurrentSession().getTransaction().isActive()) {
-					log.debug("Trying to rollback database transaction after exception");
+					log.debug("Tentando reverter transação após exceção.");
 					sf.getCurrentSession().getTransaction().rollback();
 				}
 			} catch (Throwable rbEx) {
-				log.error("Could not rollback transaction after exception!", rbEx);
+				log.error("Não foi possível reverter a transação após a exceção!", rbEx);
 			} finally {
-				log.error("Cleanup after exception!");
-
-				// Cleanup
-				log.debug("Unbinding Session after exception");
+				log.error("Limpeza após exceção!");
+				log.debug("Desvinculando a Sessão após o exceção.");
 				currentSession = ManagedSQLSessionContext.unbind(sf);
 
-				log.debug("Closing Session after exception");
+				log.debug("Fechando Sessão após a exceção.");
 				try {
 					currentSession.close();
 				} catch (Exception e) {
@@ -161,15 +140,13 @@ public class AnterosSQLSessionConversationFilter
 				httpSession.setAttribute(ANTEROS_SESSION_KEY, null);
 
 			}
-
-			// Let others handle it... maybe another interceptor for exceptions?
 			throw new ServletException(ex);
 		}
 
 	}
 
 	public void init(FilterConfig filterConfig) throws ServletException {
-		log.debug("Initializing filter...");
+		log.debug("Inicializando filtro...");
 		sf = (SQLSessionFactory) filterConfig.getServletContext().getAttribute(AnterosSQLSessionFactoryContextListener.ANTEROS_SESSIONFACTORY_KEY);
 	}
 
