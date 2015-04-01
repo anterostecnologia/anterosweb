@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>br.com.anteros</groupId>
-  <artifactId>Anteros-Web</artifactId>
-  <version>0.0.5-SNAPSHOT</version>
-  <packaging>jar</packaging>
+	<groupId>br.com.anteros</groupId>
+	<artifactId>Anteros-Web</artifactId>
+	<version>0.0.5-SNAPSHOT</version>
+	<packaging>jar</packaging>
 
 	<properties>
 		<java.versao>1.6</java.versao>
@@ -24,9 +24,15 @@
 
 		<dependency>
 			<groupId>br.com.anteros</groupId>
+			<artifactId>Anteros-Persistence-Core</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<dependency>
+			<groupId>br.com.anteros</groupId>
 			<artifactId>Anteros-Persistence</artifactId>
 			<version>LATEST</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>
