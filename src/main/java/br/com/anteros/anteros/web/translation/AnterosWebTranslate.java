@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package br.com.anteros.anteros.web.util;
+package br.com.anteros.anteros.web.translation;
 
-import br.com.anteros.core.utils.AbstractCoreTranslate;
+import br.com.anteros.core.translation.AbstractCoreTranslate;
+import br.com.anteros.core.translation.TranslateMessage;
 
 /**
  * 
@@ -24,14 +25,17 @@ import br.com.anteros.core.utils.AbstractCoreTranslate;
  */
 public class AnterosWebTranslate extends AbstractCoreTranslate {
 
+	private static AnterosWebTranslate singleton;
 
-	private AnterosWebTranslate(String messageBundleName) {
-		super(messageBundleName);
-	}
+	public static AnterosWebTranslate getInstance() {
+        if ( singleton == null )
+            singleton = new AnterosWebTranslate(AnterosWebTranslateMessages.class);
+
+        return (AnterosWebTranslate) singleton;
+    }    
 	
-
-	static {
-		setInstance(new AnterosWebTranslate("anterossweb_messages"));
+	public AnterosWebTranslate(Class<? extends TranslateMessage> translateClass) {
+		super(translateClass);
 	}
 
 }
