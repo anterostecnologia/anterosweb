@@ -7,13 +7,43 @@
 	<version>1.0.1</version>
 	<packaging>jar</packaging>
 
-	<properties>
-		<java.versao>1.6</java.versao>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bintray.subject>edson</bintray.subject>
-		<bintray.repo>maven</bintray.repo>
-		<bintray.package>anteros-web</bintray.package>
-	</properties>
+	<name>Anteros Web</name>
+	<description>
+         Anteros Web for Java.
+    </description>
+	<organization>
+		<name>Anteros Tecnologia</name>
+		<url>http://www.anteros.com.br</url>
+	</organization>
+	<url>http://github.com/anterostecnologia</url>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
+	<scm>
+		<connection>scm:git:git@github.com:anterostecnologia/anterosweb.git</connection>
+		<developerConnection>scm:git:git@github.com:anterostecnologia/anterosweb.git</developerConnection>
+		<url>https://github.com/anterostecnologia/anterosweb</url>
+	</scm>
+
+	<developers>
+		<developer>
+			<id>edson</id>
+			<name>Edson Martins</name>
+			<email>edsonmartins2005@gmail.com</email>
+			<organization>Anteros Tecnologia</organization>
+			<organizationUrl>http://www.anteros.com.br</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
+
 
 	<dependencies>
 		<!-- PROVIDED -->
