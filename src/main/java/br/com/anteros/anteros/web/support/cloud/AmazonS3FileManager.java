@@ -10,7 +10,7 @@ public class AmazonS3FileManager implements ExternalFileManager {
 		return null;
 	}
 
-	public void removeFile(String fileName) throws Exception {
+	public void removeFile(String folderName, String fileName) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}

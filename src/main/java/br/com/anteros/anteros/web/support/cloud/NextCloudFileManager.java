@@ -15,9 +15,12 @@ import br.com.anteros.persistence.session.ResultInfo;
 public class NextCloudFileManager implements ExternalFileManager {
 
 	AnterosNextCloudConnector connector;
+	private String defaultFolder;
 
-	public NextCloudFileManager(String serverName, boolean useHttps, int port, String username, String password) {
+	public NextCloudFileManager(String serverName, boolean useHttps, int port, String username, String password,
+			String defaultFolder) {
 		connector = new AnterosNextCloudConnector(serverName, useHttps, port, username, password);
+		this.defaultFolder = defaultFolder;
 	}
 
 	@Override
@@ -26,11 +29,24 @@ public class NextCloudFileManager implements ExternalFileManager {
 			fileName = UUID.randomUUID().toString();
 		}
 		if (StringUtils.isEmpty(folderName)) {
-			folderName = "";
+			folderName = defaultFolder;
 		}
 
-		
-		if (connector.fileExists(fileName)) {
+		String[] folderNameSplit = folderName.split("\\/");
+		String fldTemp = "";
+		boolean appendDelimiter = false;
+		for (String fld : folderNameSplit) {
+			if (appendDelimiter) {
+				fldTemp += "/";
+			}
+			fldTemp += fld;
+			if (!connector.folderExists(fldTemp)) {
+				connector.createFolder(fldTemp);
+			}
+			appendDelimiter = true;
+		}
+
+		if (connector.fileExists(folderName + File.separator + fileName)) {
 			throw new ExternalFileManagerException("Arquivo já existe " + folderName + File.separator + fileName);
 		}
 		try {
@@ -46,19 +62,21 @@ public class NextCloudFileManager implements ExternalFileManager {
 	}
 
 	@Override
-	public void removeFile(String fileName) throws Exception {
-		if (!connector.fileExists(fileName)) {
-			throw new ExternalFileManagerException("Arquivo não encontrado " + fileName);
+	public void removeFile(String folderName, String fileName) throws Exception {
+		if (StringUtils.isEmpty(folderName)) {
+			folderName = defaultFolder;
+		}
+
+		if (!connector.fileExists(folderName + File.separator + fileName)) {
+			throw new ExternalFileManagerException("Arquivo não encontrado " + folderName + File.separator + fileName);
 		}
 		try {
-			connector.removeFile(fileName);
+			connector.removeFile(folderName + File.separator + fileName);
 		} catch (Exception exception) {
-			throw new ExternalFileManagerException(
-					"Não foi possível remover o arquivo " + fileName + " => " + exception.getMessage());
+			throw new ExternalFileManagerException("Não foi possível remover o arquivo " + folderName + File.separator
+					+ fileName + " => " + exception.getMessage());
 		}
 
 	}
-
-	
 
 }
