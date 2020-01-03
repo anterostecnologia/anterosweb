@@ -24,7 +24,7 @@ public class NextCloudFileManager implements ExternalFileManager {
 	}
 
 	@Override
-	public ResultInfo saveFile(String folderName, String fileName, byte[] fileContent) throws Exception {
+	public ResultInfo saveFile(String folderName, String fileName, byte[] fileContent, String mimeType) throws Exception {
 		if (StringUtils.isEmpty(fileName)) {
 			fileName = UUID.randomUUID().toString();
 		}
@@ -54,7 +54,14 @@ public class NextCloudFileManager implements ExternalFileManager {
 			connector.uploadFile(bais, folderName + File.separator + fileName);
 			Share doShare = connector.doShare(folderName + File.separator + fileName, ShareType.PUBLIC_LINK, "", false,
 					"", new SharePermissions(1));
-			return ResultInfo.of(doShare.getUrl(), new Long(fileContent.length), fileName);
+			
+			String sharedLink = null;
+			if (mimeType.contains("image")) {
+				sharedLink = doShare.getUrl() + "/preview#" + fileName;
+			} else {
+				sharedLink = doShare.getUrl() + "/download#" + fileName;
+			}			
+			return ResultInfo.of(sharedLink, new Long(fileContent.length), fileName);
 		} catch (Exception exception) {
 			throw new ExternalFileManagerException(
 					"O upload do arquivo falhou " + fileName + " => " + exception.getMessage());
