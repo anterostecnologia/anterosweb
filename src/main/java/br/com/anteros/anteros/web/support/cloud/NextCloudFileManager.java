@@ -24,7 +24,7 @@ public class NextCloudFileManager implements ExternalFileManager {
 	}
 
 	@Override
-	public ResultInfo saveFile(String folderName, String fileName, byte[] fileContent, String mimeType) throws Exception {
+	public ResultInfo uploadAndShareFile(String folderName, String fileName, byte[] fileContent, String mimeType) throws Exception {
 		if (StringUtils.isEmpty(fileName)) {
 			fileName = UUID.randomUUID().toString();
 		}
