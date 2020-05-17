@@ -5,7 +5,7 @@
 
 	<groupId>br.com.anteros</groupId>
 	<artifactId>Anteros-Web</artifactId>
-	<version>1.0.6</version>
+	<version>1.0.8</version>
 	<packaging>jar</packaging>
 
 	<name>Anteros Web</name>
@@ -67,7 +67,6 @@
 			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>br.com.anteros</groupId>
 			<artifactId>Anteros-Persistence-Core</artifactId>
@@ -78,11 +77,26 @@
 			<artifactId>Anteros-Persistence</artifactId>
 			<version>LATEST</version>
 		</dependency>
-
-		
-
-
 	</dependencies>
+	
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>bintray-puravida-software-repo</id>
+			<name>bintray</name>
+			<url>https://dl.bintray.com/puravida-software/repo</url>
+		</repository>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>spring</id>
+			<name>extensions</name>
+			<url>https://repo.spring.io/release</url>
+		</repository>
+	</repositories>
 
 	<profiles>
 		<profile>
