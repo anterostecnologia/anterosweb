@@ -5,7 +5,7 @@
 
 	<groupId>br.com.anteros</groupId>
 	<artifactId>Anteros-Web</artifactId>
-	<version>1.0.9</version>
+	<version>1.0.11</version>
 	<packaging>jar</packaging>
 
 	<name>Anteros Web</name>
@@ -70,33 +70,16 @@
 		<dependency>
 			<groupId>br.com.anteros</groupId>
 			<artifactId>Anteros-Persistence-Core</artifactId>
-			<version>LATEST</version>
+			<version>[1.0.86,]</version>
 		</dependency>
 		<dependency>
 			<groupId>br.com.anteros</groupId>
 			<artifactId>Anteros-Persistence</artifactId>
-			<version>LATEST</version>
+			<version>[1.0.7,]</version>
 		</dependency>
 	</dependencies>
 	
-	<repositories>
-		<repository>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>bintray-puravida-software-repo</id>
-			<name>bintray</name>
-			<url>https://dl.bintray.com/puravida-software/repo</url>
-		</repository>
-		<repository>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>spring</id>
-			<name>extensions</name>
-			<url>https://repo.spring.io/release</url>
-		</repository>
-	</repositories>
+	
 
 	<profiles>
 		<profile>
@@ -323,13 +306,7 @@
 						</plugin>
 					</plugins>
 				</pluginManagement>
-			</build>
-			<distributionManagement>
-				<repository>
-					<id>local-REPO</id>
-					<url>http://vps4657.publiccloud.com.br:8082/artifactory/libs-release-local</url>
-				</repository>
-			</distributionManagement>
+			</build>			
 		</profile>
 	</profiles>
 </project>
